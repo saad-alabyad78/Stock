@@ -37,7 +37,10 @@ public class StockRepository : IStockRepository
                     stocks.OrderBy(s=>s.Symbol) ;
             }
         }
-        return await stocks.ToListAsync() ;
+        //TODO: validate that numbers are not negative
+        var skipNumber = (query.PageNumber -1) * query.PageSize ;
+        var takeNumber = query.PageSize ;
+        return await stocks.Skip(skipNumber).Take(takeNumber).ToListAsync() ;
     }
 
     public async Task<Stock?> GetByIdAsync(int id)
