@@ -37,10 +37,14 @@ namespace api.Controllers
             }
             return Ok(comment.ToCommentDto()); 
         }
+        
         [HttpPost]
         [Route("{stockId:int}")]
         public async Task<IActionResult> Create([FromRoute] int stockId , [FromBody]CreateCommetRequestDto commentDto)
         {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if(!await _stockRepo.StockExists(stockId)){
                 return BadRequest("stock with id {stockId} does not exists");
             }
@@ -56,6 +60,9 @@ namespace api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> Update([FromRoute]int id , [FromBody]UpdateCommentRequestDto update)
         {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var commentModel = await _commentRepo.UpdateAsync(id , update.ToCommentFromUpdateDto());
             if(commentModel==null){
                 return NotFound();

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Stock;
+using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
@@ -24,9 +25,9 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery]QueryObject query)
         {
-            var stocks = await _stockRepo.GetAllAsync();
+            var stocks = await _stockRepo.GetAllAsync(query);
 
             var stocksDto = stocks.Select(s => s.ToStockDto());
 
@@ -48,6 +49,9 @@ namespace api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateStockRequestDto stockDto)
         {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var stockModel = stockDto.ToStockFromCreateDto();
 
             await _stockRepo.CreateAsync(stockModel);
@@ -59,6 +63,9 @@ namespace api.Controllers
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update([FromRoute] int id , [FromBody]UpdateStockRequestDto updateDto)
         {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+                
             var stockModel = await _stockRepo.UpdateAsync(id , updateDto.ToStockFromUpdateDto()) ;
 
             if(stockModel == null){
