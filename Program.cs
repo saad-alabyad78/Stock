@@ -1,13 +1,14 @@
 global using api.Models;
 global using api.Data;
+global using api.Interfaces;
+global using api.Repository;
 using Microsoft.EntityFrameworkCore;
-using api.Interfaces;
-using api.Repository;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using api.Service;
+using Microsoft.OpenApi.Models;
 
 
 
@@ -63,6 +64,33 @@ builder.Services.AddScoped<IStockRepository , StockRepository>() ;
 builder.Services.AddScoped<ICommentRepository , CommentRepository>() ;
 builder.Services.AddScoped<ITokenService , TokenService>() ;
 
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
 
 var app = builder.Build();
 
