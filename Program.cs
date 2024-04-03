@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using api.Service;
 
 
 
@@ -28,13 +29,12 @@ builder.Services.AddDbContext<ApplicationDBContext>(options => {
 });
 
 builder.Services.AddIdentity<AppUser ,IdentityRole>(options => {
-    options.Password.RequireDigit = true; 
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequiredLength = 8 ;
+    options.Password.RequiredLength = 0 ;
+    options.Password.RequireNonAlphanumeric = false ;
+    options.Password.RequireUppercase = false ;
+    options.Password.RequireLowercase = false ;
+    options.Password.RequireDigit = false ;
     //add password roles
-
 })
 .AddEntityFrameworkStores<ApplicationDBContext>();
 
@@ -54,14 +54,14 @@ builder.Services.AddAuthentication(options => {
         ValidAudience = builder.Configuration["JWT:Audience"],
         ValidateIssuerSigningKey = true ,
         IssuerSigningKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SingingKey"])
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"])
         )
     };
 });
 
 builder.Services.AddScoped<IStockRepository , StockRepository>() ;
 builder.Services.AddScoped<ICommentRepository , CommentRepository>() ;
-
+builder.Services.AddScoped<ITokenService , TokenService>() ;
 
 
 var app = builder.Build();
