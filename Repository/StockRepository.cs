@@ -18,7 +18,7 @@ public class StockRepository : IStockRepository
 
     public async Task<List<Stock>> GetAllAsync(QueryObject query)
     {
-        var stocks =  _context.Stock.Include(s=>s.Comments).AsQueryable();
+        var stocks =  _context.Stocks.Include(s=>s.Comments).AsQueryable();
 
         if(!string.IsNullOrWhiteSpace(query.CompanyName))
         {
@@ -45,19 +45,19 @@ public class StockRepository : IStockRepository
 
     public async Task<Stock?> GetByIdAsync(int id)
     {
-        return await _context.Stock.Include(s=>s.Comments).FirstOrDefaultAsync(i => i.Id == id);
+        return await _context.Stocks.Include(s=>s.Comments).FirstOrDefaultAsync(i => i.Id == id);
     }
 
     public async Task<Stock> CreateAsync(Stock stockModel)
     {
-        await _context.Stock.AddAsync(stockModel);
+        await _context.Stocks.AddAsync(stockModel);
         await _context.SaveChangesAsync();
         return stockModel;
     }
 
     public async Task<Stock?> UpdateAsync(int id , Stock stockModel)
     {
-        var currStock = await _context.Stock.FirstOrDefaultAsync(x=>x.Id == id) ;
+        var currStock = await _context.Stocks.FirstOrDefaultAsync(x=>x.Id == id) ;
 
         if(currStock==null){
             return null;
@@ -76,18 +76,18 @@ public class StockRepository : IStockRepository
     }
     public async Task<Stock?> DeleteAsync(int id)
     {
-        var stockModel = await _context.Stock.FirstOrDefaultAsync(x => x.Id == id) ;
+        var stockModel = await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id) ;
 
         if(stockModel==null){
             return null;
         }
-        _context.Stock.Remove(stockModel);
+        _context.Stocks.Remove(stockModel);
         await _context.SaveChangesAsync();
         return stockModel;
     }
 
     public async Task<bool> StockExists(int id)
     {
-        return await _context.Stock.AnyAsync(s => s.Id == id);
+        return await _context.Stocks.AnyAsync(s => s.Id == id);
     }
 }
